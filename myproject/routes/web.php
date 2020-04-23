@@ -1,5 +1,6 @@
 <?php
-
+use App\file;
+use App\User;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -22,8 +23,19 @@ Route::view ('/','auth/login');
 Auth::routes();
 
 Route::get('/home', 'HomeController@index')->name('home');
-Route::view ('/index','index');
-Route::view ('/filelist','filelist');
+Route::view('/index','index');
+Route::view('/filelist','filelist');
 
-Route::get('/file','FileController@getData');
-Route::get('/files','FileController@getpublicData');
+//Route::get('/file','FileController@getData');
+//Route::get('/files','FileController@getpublicData');
+
+Route::get('/files',function(){
+    $s = file::where('access','public')->Orderby('name','asc')->get();
+    return view('index',['s' => $s]);
+});
+Route::get('/file',function(){
+    $user = auth()->user();
+    $uname = $user->name;
+    $data = file::where('uploader',$uname)->Orderby('name','asc')->get();
+    return view('filelist',['data' => $data]);
+});
